@@ -9,23 +9,22 @@ class CreateDriverSerializer(serializers.ModelSerializer):
         fields = ['firstName', 'lastName', 'phoneNo', 'email', 'preferedHour', 'cityOfWork', 'LinkedTaxiLicense']
 
 
-
 class GetAllDriverSerializer(serializers.ModelSerializer):
     class Meta:
         model = Driver
         fields = ['id', 'firstName', 'lastName', 'phoneNo', 'email', 'status']
 
 
-
 class GetDriverSerializer(serializers.ModelSerializer):
     class Meta:
         model = Driver
-        fields = ['id', 'firstName', 'lastName', 'phoneNo', 'email', 'address', \
+        fields = ['id', 'firstName', 'lastName', 'countryCode', 'phoneNo', 'email', 'address', \
             'landLineNumber', 'dateOfBirth', 'placeOfBirth', 'createDate', 'removeDate',\
             'DNIAddress', 'DNICityAddress', 'ExpirationDateCirculationPermit', 'Regularschedule', \
             'LinkedTaxiLicense', 'RegistrationTaxiLinked', 'language', 'AdminNotices', \
-            'AdminNotes', 'profileImg', 'PhotoDNI', 'CredintialPhoto', 'driverScore', 'status', 'comisionTpv', 'BankAccountDetails']
-
+            'TravelCommission', 'CommissionChargeCards', 'BankCurrentAccount', 'AdminNotes',\
+            'profileImg', 'PhotoDNI', 'CredintialPhoto', 'preferedHour', 'cityOfWork', \
+            'comisionTpv', 'BankAccountDetails', 'driverScore', 'status']
 
 
 class GetUserSerializer(serializers.ModelSerializer):

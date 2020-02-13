@@ -19,14 +19,15 @@ class GetAdminSerializers(serializers.ModelSerializer):
 class CreateUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['fullName', 'countryCode', 'phoneNo', 'email', 'status', 'package', 'solidarityTaxi', 'handicapedTaxi']
+        fields = ['fullName', 'countryCode', 'phoneNo', 'typeOfClient', 'email', 'status', 'package', 'solidarityTaxi', 'handicapedTaxi']
 
 
 class CreateUserByAdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['fullName', 'countryCode', 'phoneNo', 'email', 'createDate', 'removeDate',\
-            'status', 'dateOfBirth', 'gender', 'address', 'adminNotices']
+            'status', 'dateOfBirth', 'gender', 'address', 'adminNotices', \
+            'typeOfClient', 'solidarityTaxi', 'handicapedTaxi', 'package']
 
 
 
@@ -41,4 +42,5 @@ class CreateDriverByAdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = Driver
         fields = ['firstName', 'lastName', 'phoneNo', 'email', 'createDate', 'removeDate', 'TravelCommission', \
-            'CommissionChargeCards', 'BankCurrentAccount', 'preferedHour']
+                'preferedHour', 'comisionTpv', 'BankAccountDetails', 'TravelCommission', 'CommissionChargeCards',\
+                'BankCurrentAccount']

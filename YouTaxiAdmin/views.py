@@ -50,7 +50,7 @@ def CreateAdmin(request):
         print("Create Admin Exception : ", e)
         ack = 1
         success = False
-        status = 406
+        status = 400
         msg = "Failed to create Admin"
     
     data = {'success': success, 'status': status, 'ack': ack, 'msg': msg}
@@ -158,6 +158,57 @@ def CreateUser(request):
     return Response(data=data, status=status)
 
 
+@api_view(['POST'])
+def UpdateUserByAdmin(request, slug):
+    try:
+        User = UserModel.User.objects.get(id=slug)
+        try:
+            adminNotices = request.data['adminNotices']
+        except:
+            adminNotices = ''
+        try:
+            package = request.data['package']
+        except:
+            package = ''
+        try:
+            solidarityTaxi = request.data['solidarityTaxi']
+        except:
+            solidarityTaxi = ''
+        try:
+            handicapedTaxi = request.data['handicapedTaxi']
+        except:
+            handicapedTaxi = ''
+        try:
+            status = request.data['status']
+        except:
+            status = ''
+
+        if adminNotices != '':
+            User.adminNotices = adminNotices
+        if package != '':
+            User.package = package
+        if solidarityTaxi != '':
+            User.solidarityTaxi = solidarityTaxi
+        if handicapedTaxi != '':
+            User.handicapedTaxi = handicapedTaxi
+        if status != '':
+            User.status = status
+        User.save()
+
+        success = True
+        status = 200
+        ack = 5
+        msg = "Updated"
+    except Exception as e:
+        print("UpdateUserByAdmin : ", e)
+        success = False
+        status = 400
+        ack = 1
+        msg = "Fail to Update"
+
+    data = {'success': success, 'status': status, 'ack': ack, 'msg': msg}
+    return Response(data=data, status=status)
+
 
 @api_view(['POST'])
 def CreateUserByAdmin(request):
@@ -206,7 +257,7 @@ def CreateDriver(request):
         else:
             ack = 1
             success = False
-            status = 406
+            status = 400
             msg = "Please fill out the form"
 
     except Exception as e:
@@ -218,7 +269,6 @@ def CreateDriver(request):
 
     data = {'success': success, 'status': status, 'ack': ack, 'msg': msg}
     return Response(data=data, status=status)
-
 
 
 @api_view(['POST'])
@@ -266,8 +316,93 @@ def CreateDriverByAdmin(request):
         msg = "Fail To Created Driver"
 
     data = {'success': success, 'status': status, 'ack': ack, 'msg': msg}
-    return Response(data=data, status=status)
+    
 
+@api_view(['POST'])
+def UpdateDriverByAdmin(request, slug):
+    try:
+        Driver = DriverModel.Driver.objects.get(id=slug)
+        try:
+            AdminNotices = request.data['AdminNotices']
+        except:
+            AdminNotices = ''
+        try:
+            AdminNotes = request.data['AdminNotes']
+        except:
+            AdminNotes = ''
+        try:
+            comisionTpv = request.data['comisionTpv']
+        except:
+            comisionTpv = ''
+        try:
+            TravelCommission = request.data['TravelCommission']
+        except:
+            TravelCommission = ''
+        try:
+            status = request.data['status']
+            if status == 'true':
+                status = True
+            else:
+                status = False
+        except:
+            status = ''
+        try:
+            profileImg = request.data['profileImg']
+            PreProfileImage = Driver.profileImg
+            CurrentProfileImage = profileImg
+            if PreProfileImage == CurrentProfileImage:
+                profileImg = ''
+        except:
+            profileImg = ''
+        try:
+            PhotoDNI = request.data['PhotoDNI']
+            PrePhotoDNI = Driver.PhotoDNI
+            CurrentPhotoDNI = PhotoDNI
+            if PrePhotoDNI == CurrentPhotoDNI:
+                PhotoDNI = ''
+        except:
+            PhotoDNI = ''
+        try:
+            CredintialPhoto = request.data['CredintialPhoto']
+            PreCredintialPhoto = Driver.CredintialPhoto
+            CurrentCredintialPhoto = CredintialPhoto
+            if PreCredintialPhoto == CurrentCredintialPhoto:
+                CredintialPhoto = ''
+        except:
+            CredintialPhoto = ''
+        
+        if AdminNotices != '':
+            Driver.AdminNotices = AdminNotices
+        if AdminNotes != '':
+            Driver.AdminNotes = AdminNotes
+        if comisionTpv != '':
+            Driver.comisionTpv = comisionTpv
+        if TravelCommission != '':
+            Driver.TravelCommission = TravelCommission
+        if status != '':
+            Driver.status = status
+        if profileImg != '':
+            Driver.profileImg = profileImg
+        if PhotoDNI != '':
+            Driver.PhotoDNI = PhotoDNI
+        if CredintialPhoto != '':
+            Driver.CredintialPhoto = CredintialPhoto
+        Driver.save()
+        
+        ack = 5
+        success = True
+        status = 200
+        msg = "Driver Updated"
+
+    except Exception as e:
+        print("UpdateDriverByAdmin : ", e)
+        ack = 1
+        success = False
+        status = 400
+        msg = "Fail To Update Driver"
+    
+    data = {'success': success, 'status': status, 'ack': ack, 'msg': msg}
+    return Response(data=data, status=status)
 
 
 @api_view(['POST'])
@@ -299,7 +434,7 @@ def CreateFare(request):
         print("Create Fare Error : ", e)
         ack = 1
         success = False
-        status = 406
+        status = 400
         msg = "Fail To Create Fare"
     
     data = {'success': success, 'status': status, 'ack': ack, 'msg': msg}
@@ -419,7 +554,7 @@ def CreateVehicles(request):
         print("Create Vehicles Error : ", e)
         ack = 1
         success = False
-        status = 406
+        status = 400
         msg = "Fali to create Vehicles"
 
     data = {'success': success, 'status': status, 'ack': ack, 'msg': msg}
@@ -613,7 +748,7 @@ def GetAllCMS(request):
         cmsObjectList = {}
         ack = 1
         success = False
-        status = 406
+        status = 400
         msg = "Fail to Load Data"
 
     data = {'success': success, 'status': status, 'ack': ack, 'msg': msg, 'cmsList': cmsObjectList}
@@ -636,7 +771,7 @@ def GetCMSById(request, slug):
         cmsObjectList = []
         ack = 1
         success = False
-        status = 406
+        status = 400
         msg = "Fail to Load Data"
 
     data = {'success': success, 'status': status, 'ack': ack, 'msg': msg, 'cmsObjectList': cmsObjectList}
@@ -673,7 +808,7 @@ def CreateEmailTemplate(request):
         print("Create Tempalte Error : ", e)
         ack = 1
         success = False
-        status = 406
+        status = 400
         msg = "Templete Can't be created"
     
     data = {'success': success, 'status': status, 'ack': ack, 'msg': msg}
@@ -696,7 +831,7 @@ def GetAllEmailTemplates(request):
         EmailTempObjectList = {}
         ack = 1
         success = False
-        status = 406
+        status = 400
         msg = "Fail to load"
 
     data = {'success': success, 'status': status, 'ack': ack, 'msg': msg, 'EmailTempObjectList': EmailTempObjectList}
@@ -720,7 +855,7 @@ def GetEmailTemplateById(request, slug):
         EmailTempObjectList = []
         ack = 1
         success = False
-        status = 406
+        status = 400
         msg = "Fail to load"
 
     data = {'success': success, 'status': status, 'ack': ack, 'msg': msg, 'EmailTempObjectList': EmailTempObjectList}
@@ -820,7 +955,7 @@ def SiteSetting(request):
             print("Site Setting Error : ", e)
             ack = 1
             success = False
-            status = 406
+            status = 400
             msg = "Data Not Created"
     
     data = {'success': success, 'status': status, 'ack': ack, 'msg': msg}
@@ -1121,7 +1256,7 @@ def CreateCar(request):
         print("Create Car Error : ", e)
         ack = 1
         success = False
-        status = 406
+        status = 400
         msg = "Fali to create Car"
 
     data = {'success': success, 'status': status, 'ack': ack, 'msg': msg}
@@ -1242,7 +1377,7 @@ def CarUpdate(request,slug):
         print("Update Car Error : ", e)
         ack = 1
         success = False
-        status = 406
+        status = 400
         msg = "Fali to Update Car"
 
     data = {'success': success, 'status': status, 'ack': ack, 'msg': msg}

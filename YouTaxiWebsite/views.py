@@ -208,7 +208,6 @@ def GetAllDriver(request):
 
 '''
 Admin Get Driver By Id
-
 '''
 
 @api_view(['GET'])

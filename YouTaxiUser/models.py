@@ -35,7 +35,7 @@ class User(models.Model):
     adminNotices = models.TextField(default="Notice")
     clintScore = models.FloatField(default=0.0)
     ProfileImage = models.ImageField(default=DEFAUT_IMAGE, upload_to='User/ProfileImage/')
-    typeOfClient = models.CharField(max_length=1, choices=TYPE_OF_CLIENT,default="")
+    typeOfClient = models.CharField(max_length=10, choices=TYPE_OF_CLIENT,default="")
     package = models.BooleanField(default=False)
     solidarityTaxi = models.BooleanField(default=False)
     handicapedTaxi = models.BooleanField(default=False)
