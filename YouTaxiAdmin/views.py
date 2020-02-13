@@ -316,6 +316,7 @@ def CreateDriverByAdmin(request):
         msg = "Fail To Created Driver"
 
     data = {'success': success, 'status': status, 'ack': ack, 'msg': msg}
+    return Response(data=data, status=status)
     
 
 @api_view(['POST'])
