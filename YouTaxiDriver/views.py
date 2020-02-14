@@ -283,20 +283,23 @@ def DriverMobileLogin(request):
         DriverObject.driverOTP = 432
         DriverObject.save()
 
-        PhotoObject = DriverObject.CredintialPhoto
-        print(PhotoObject.name)
-        if PhotoObject.name != 'default/Image/avater.jpeg':
-            ack = 5
-            status = 200
-            success = True
-            msg = "Login Successful"
-        else:
-            ack = 1
-            status = 400
-            success = False
-            msg = "Please Go to Driver Admin Panel & Upload Your Identification Document"
+        ack = 5
+        status = 200
+        success = True
+        msg = "Login Successful"
 
-
+        # PhotoObject = DriverObject.CredintialPhoto
+        # print(PhotoObject.name)
+        # if PhotoObject.name != 'default/Image/avater.jpeg':
+        #     ack = 5
+        #     status = 200
+        #     success = True
+        #     msg = "Login Successful"
+        # else:
+        #     ack = 1
+        #     status = 400
+        #     success = False
+        #     msg = "Please Go to Driver Admin Panel & Upload Your Identification Document"
     
     except Exception as e:
         print("DriverMobileLogin : ", e)
