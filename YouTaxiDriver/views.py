@@ -325,19 +325,29 @@ def DriverMobileValidateOtp(request):
             status = 200
             success = True
             msg = "OTP Mathched"
+            payload = {
+                'id': DriverObjectOtp.id,
+                'firstName': DriverObjectOtp.firstName,
+                'lastName': DriverObjectOtp.lastName,
+                'phoneNo': DriverObjectOtp.phoneNo,
+                'isDeleted': DriverObjectOtp.isDeleted,
+            }
+            token = Encode(payload)
         else:
             ack = 1
             status = 401
             success = False
             msg = "OTP did not Matched"
+            token = ''
     except Exception as e:
         print("OTP Validation Exception : ", e)
         ack = 1
         status = 404
         success = False
         msg = "Phone No Does not Exist"
+        token = ''
 
-    data = {'success': success, 'status': status, 'ack': ack, 'msg': msg}
+    data = {'success': success, 'status': status, 'ack': ack, 'msg': msg, 'token': token}
     return Response(data=data, status=status)
 
 
@@ -368,6 +378,10 @@ def DriverMobileResendOtp(request):
     return JsonResponse(data, status=status)
         
         
-        
+
+def Encode(payload):
+    jwt_token = {'token': jwt.encode(payload, "SECRET_KEY")}
+    print("Token : ", jwt_token['token'].decode("utf-8"))
+    return jwt_token['token'].decode("utf-8")
 
 

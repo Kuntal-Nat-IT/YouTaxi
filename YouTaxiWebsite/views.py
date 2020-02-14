@@ -9,7 +9,7 @@
 # Django Import
 from django.contrib.auth.models import User as U
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, Http404
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 import datetime
 import json, jwt
 from django.contrib.auth import authenticate
@@ -226,11 +226,48 @@ def GetDriverById(request, slug):
         ack = 1
         success = False
         msg = "No Record Found"
-        status = 404
+        status = 400
         DriverkObj = {}
     
     data = {'ack': ack, 'status': status, 'success': success, 'msg': msg, 'driverData': DriverkObj}
     return JsonResponse(data, status=status)
+
+
+@api_view(['POST'])
+def UpdateDriverById(request, slug):
+    try:
+        print(request.data['profileImg'])
+        DriverkObj = DriverModel.Driver.objects.get(id=slug)
+        print(DriverkObj.profileImg)
+        DriverUpdateSerializers = webSerializers.UpdateDriverDataSerializer(DriverkObj, data=request.data, partial=True)
+        if DriverUpdateSerializers.is_valid(raise_exception=True):
+            DriverUpdateSerializers.save()
+            try:
+                profileImage = request.data['profileImg']
+            except:
+                profileImage = ''
+            previousImage = "/media/" + str(DriverkObj.profileImg)
+            if previousImage != profileImage:
+                DriverkObj.profileImg = profileImage
+                DriverkObj.save()
+
+        SerializerObject = webSerializers.GetDriverSerializer(DriverkObj, many=False)
+        DriverkObj = SerializerObject.data
+        ack = 5
+        success = True
+        msg = "Update Driver"
+        status = 200
+    except Exception as e:
+        print("UpdateDriverById : ", e)
+        ack = 1
+        success = False
+        msg = "Fail to update Driver"
+        status = 400
+        DriverkObj = {}
+    
+    data = {'ack': ack, 'status': status, 'success': success, 'msg': msg, 'driverData': DriverkObj}
+    return JsonResponse(data, status=status)
+
 
 '''
 
@@ -252,7 +289,7 @@ def GetAllUser(request):
         print("Get All User Error : ", e)
         UserListSerializers = []
         ack = 1
-        status = 404
+        status = 400
         success = False
         msg = "No Record Found"
     
@@ -279,7 +316,7 @@ def GetUser(request, slug):
         print("Get User Error : ", e)
         UserSerializers = {}
         ack = 1
-        status = 404
+        status = 400
         success = False
         msg = "No Record Found"
     
