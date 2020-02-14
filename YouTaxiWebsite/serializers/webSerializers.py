@@ -27,15 +27,6 @@ class GetDriverSerializer(serializers.ModelSerializer):
             'comisionTpv', 'BankAccountDetails', 'driverScore', 'status']
 
 
-class UpdateDriverDataSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Driver
-        fields = ['firstName', 'lastName', 'address', 'landLineNumber', 'dateOfBirth', 'placeOfBirth', 'DNIAddress', \
-            'DNICityAddress', 'LinkedTaxiLicense', 'RegistrationTaxiLinked', 'AdminNotices', \
-            'TravelCommission', 'CommissionChargeCards', 'BankCurrentAccount', 'AdminNotes',\
-            'preferedHour', 'cityOfWork', 'comisionTpv', 'BankAccountDetails']
-
-
 class GetUserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User

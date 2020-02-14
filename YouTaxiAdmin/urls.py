@@ -5,7 +5,6 @@ from .import views
 urlpatterns = [
     path('demo/', views.DemoAdmin, name=""),
     path('create/', views.CreateAdmin, name=""),
-    path('update/<slug:slug>/', views.UpdateAdminProfile, name=""),
     path('get/admin/<slug:slug>/', views.GetAdminData, name=""),
     path('login/', views.AdminLogin, name=""),
     path('create/user/', views.CreateUser, name=""),

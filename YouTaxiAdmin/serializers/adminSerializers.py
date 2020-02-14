@@ -10,13 +10,6 @@ class CreateSerializer(serializers.ModelSerializer):
         fields = ['firstName', 'lastName', 'email', 'password', 'phoneNo', 'address', 'role', 'resetPasswordToken', 'tokenExpiration']
 
 
-class UpdateAdminDataSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Admin
-        fields = ['firstName', 'lastName', 'phoneNo', 'address']
-
-
-
 class GetAdminSerializers(serializers.ModelSerializer):
     class Meta:
         model = Admin

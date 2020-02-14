@@ -57,32 +57,6 @@ def CreateAdmin(request):
     return Response(data, status=status)
 
 
-@api_view(['POST'])
-def UpdateAdminProfile(request, slug):
-    try:
-        print(request.data)
-        UpdatedData = Admin.objects.get(id=slug)
-        UpdateSerilizers = adminSerializers.UpdateAdminDataSerializer(UpdatedData, data=request.data, partial=True)
-        if UpdateSerilizers.is_valid(raise_exception=True):
-            print("FFFFFFFFFFF")
-            UpdateSerilizers.save()
-        AdminSerializers = adminSerializers.GetAdminSerializers(UpdatedData, many=False)
-        AdminSerializers = AdminSerializers.data
-        ack = 5
-        success = True
-        status = 200
-        msg = "Admin Updated"
-    except Exception as e:
-        print("UpdateAdminProfile : ", e)
-        AdminSerializers = []
-        ack = 1
-        success = False
-        status = 400
-        msg = "Failed to update Admin"
-
-    data = {'success': success, 'status': status, 'ack': ack, 'msg': msg, 'admin': AdminSerializers}
-    return Response(data, status=status)
-
 
 @api_view(['POST'])
 def AdminLogin(request):

@@ -9,7 +9,6 @@ urlpatterns = [
     path('admin/login/', views.AdminLogin, name=""),
     path('get/driver/', views.GetAllDriver, name=""),
     path('get/driver/<slug:slug>/', views.GetDriverById, name=""),
-    path('update/driver/<slug:slug>/', views.UpdateDriverById, name=""),
     path('get/user/', views.GetAllUser, name=""),
     path('get/user/<slug:slug>/', views.GetUser, name=""),
     path('search/user/<slug:slug>/', views.SearchUser, name=""),
