@@ -13,14 +13,16 @@ import datetime
 import jwt, json
 
 # Model Import
-from .models import Admin, FareModel, VehicleModel as Vehicle, VehicleType, CMS, EmailTemplate, Setting, Car
+from .models import Admin, FareModel, VehicleModel as Vehicle, VehicleType,\
+     CMS, EmailTemplate, Setting, Car, PaymentHistory, RideHistory
 from YouTaxiDriver import models as DriverModel
 from YouTaxiUser import models as UserModel
 
 
 # Serializers Import
 from .serializers import adminSerializers, fareSerializers, vehiclesSerializers, \
-    vehicleTypesSerializers, cmsSerializers, emailSerializers, siteSettingSerializers, carSerializers
+    vehicleTypesSerializers, cmsSerializers, emailSerializers, siteSettingSerializers, \
+    carSerializers, paymentHistorySerializers, rideHistorySerializers
 
 
 # Rest Framework
@@ -56,6 +58,32 @@ def CreateAdmin(request):
     data = {'success': success, 'status': status, 'ack': ack, 'msg': msg}
     return Response(data, status=status)
 
+
+@api_view(['POST'])
+def UpdateAdminProfile(request, slug):
+    try:
+        print(request.data)
+        UpdatedData = Admin.objects.get(id=slug)
+        UpdateSerilizers = adminSerializers.UpdateAdminDataSerializer(UpdatedData, data=request.data, partial=True)
+        if UpdateSerilizers.is_valid(raise_exception=True):
+            print("FFFFFFFFFFF")
+            UpdateSerilizers.save()
+        AdminSerializers = adminSerializers.GetAdminSerializers(UpdatedData, many=False)
+        AdminSerializers = AdminSerializers.data
+        ack = 5
+        success = True
+        status = 200
+        msg = "Admin Updated"
+    except Exception as e:
+        print("UpdateAdminProfile : ", e)
+        AdminSerializers = []
+        ack = 1
+        success = False
+        status = 400
+        msg = "Failed to update Admin"
+
+    data = {'success': success, 'status': status, 'ack': ack, 'msg': msg, 'admin': AdminSerializers}
+    return Response(data, status=status)
 
 
 @api_view(['POST'])
@@ -1430,6 +1458,52 @@ def MakeCareActivateDeactivate(request,slug):
 
     data = {'success': success, 'status': status, 'ack': ack, 'msg': msg}
     return Response(data=data, status=status)
+
+
+@api_view(['GET'])
+def GetAllPaymentHistory(request):
+    try:
+        PaymentHistoryData = PaymentHistory.objects.all()
+        PayData = paymentHistorySerializers.GetAllPaymentHistorySerializer(PaymentHistoryData, many=True)
+        PayData = PayData.data
+        success = True
+        status  = 200
+        ack = 5
+        msg = "Data Loaded"
+    except Exception as e:
+        print("GetAllPaymentHistory : ", e)
+        PayData = []
+        success = False
+        status  = 400
+        ack = 1
+        msg = "Fail To Load Data"
+    
+    data = {'success': success, 'status': status, 'ack': ack, 'msg': msg, "PaymentHistory": PayData}
+    return Response(data=data, status=status)
+
+
+@api_view(['GET'])
+def GetAllRideHistory(request):
+    try:
+        RideHistoryData = RideHistory.objects.all()
+        RideData = rideHistorySerializers.GetAllRideHistorySerializer(RideHistoryData, many=True)
+        RideData = RideData.data
+        success = True
+        status  = 200
+        ack = 5
+        msg = "Data Loaded"
+    except Exception as e:
+        print("GetAllRideHistory : ", e)
+        RideData = []
+        success = False
+        status  = 400
+        ack = 1
+        msg = "Fail To Load Data"
+    
+    data = {'success': success, 'status': status, 'ack': ack, 'msg': msg, "RideHistory": RideData}
+    return Response(data=data, status=status)
+
+
 
 
 

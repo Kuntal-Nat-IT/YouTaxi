@@ -9,18 +9,22 @@
 # Django Import
 from django.contrib.auth.models import User as U
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, Http404
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 import datetime
 import json, jwt
 from django.contrib.auth import authenticate
 
 # Model Import
+from django.db.models import Q
 from YouTaxiDriver import models as DriverModel
 from YouTaxiAdmin import models as AdminModel
 from YouTaxiUser import models as UserModel
+from YouTaxiCompany import models as CompanyModel
 
 # Serializers Import
 from .serializers import webSerializers
+from YouTaxiCompany.serializers import companySerializers
+from YouTaxiAdmin.serializers import rideHistorySerializers, paymentHistorySerializers
 
 # Rest Framework
 from rest_framework.views import APIView
@@ -52,13 +56,13 @@ def AdminLogin(request):
         else:
             ack = 1
             success = False
-            status = 406
+            status = 400
             msg = "Password is not matched"
     except Exception as e:
         print("Login Exception : ", e)
         ack = 5
         success = False
-        status = 406
+        status = 400
         msg = "Email Not Found"
 
     data = {'success': success, 'status': status, 'ack': ack, 'msg': msg}
@@ -99,19 +103,19 @@ def CreateDriver(request):
                 msg = "Driver Created"
             else:
                 ack = 1
-                status = 406
+                status = 400
                 success = False
                 msg = "Driver Not Created"
         else:
             ack = 1
-            status = 406
+            status = 400
             success = False
             msg = "Driver Already Exist"
     
     except Exception as e:
         print("Driver Create Exception : ", e)
         ack = 1
-        status = 406
+        status = 400
         success = False
         msg = "Driver Not Created"
     
@@ -171,7 +175,7 @@ def DriverLogin(request):
     except Exception as e:
         print("Email Does Not Exist", e)
         ack = 1
-        status = 406
+        status = 400
         success = False
         msg = "Email Does Not Exist"
         token = ''
@@ -201,7 +205,7 @@ def GetAllDriver(request):
         ack = 1
         success = False
         msg = "No Record Found"
-        status = 406
+        status = 400
     
     data = {'ack': ack, 'status': status, 'success': success, 'msg': msg, 'DriverList': DriverList}
     return JsonResponse(data, status=status)
@@ -226,16 +230,56 @@ def GetDriverById(request, slug):
         ack = 1
         success = False
         msg = "No Record Found"
-        status = 404
+        status = 400
         DriverkObj = {}
     
     data = {'ack': ack, 'status': status, 'success': success, 'msg': msg, 'driverData': DriverkObj}
     return JsonResponse(data, status=status)
 
+
+@api_view(['POST'])
+def UpdateDriverById(request, slug):
+    try:
+        DriverkObj = DriverModel.Driver.objects.get(id=slug)
+        if DriverkObj.status is not True:
+            DriverUpdateSerializers = webSerializers.UpdateDriverDataSerializer(DriverkObj, data=request.data, partial=True)
+            if DriverUpdateSerializers.is_valid(raise_exception=True):
+                DriverUpdateSerializers.save()
+                try:
+                    profileImage = request.data['profileImg']
+                except:
+                    profileImage = ''
+                previousImage = "/media/" + str(DriverkObj.profileImg)
+                if previousImage != profileImage:
+                    DriverkObj.profileImg = profileImage
+                    DriverkObj.save()
+
+            SerializerObject = webSerializers.GetDriverSerializer(DriverkObj, many=False)
+            DriverkObj = SerializerObject.data
+            ack = 5
+            success = True
+            msg = "Update Driver"
+            status = 200
+        else:
+            ack = 2
+            success = False
+            msg = "Admin Permission Required"
+            status = 400
+            DriverkObj = {}
+    except Exception as e:
+        print("UpdateDriverById : ", e)
+        ack = 1
+        success = False
+        msg = "Fail to update Driver"
+        status = 400
+        DriverkObj = {}
+    
+    data = {'ack': ack, 'status': status, 'success': success, 'msg': msg, 'driverData': DriverkObj}
+    return JsonResponse(data, status=status)
+
+
 '''
-
 Admin Get User List
-
 '''
 
 @api_view(['GET'])
@@ -252,7 +296,7 @@ def GetAllUser(request):
         print("Get All User Error : ", e)
         UserListSerializers = []
         ack = 1
-        status = 404
+        status = 400
         success = False
         msg = "No Record Found"
     
@@ -279,7 +323,7 @@ def GetUser(request, slug):
         print("Get User Error : ", e)
         UserSerializers = {}
         ack = 1
-        status = 404
+        status = 400
         success = False
         msg = "No Record Found"
     
@@ -295,7 +339,7 @@ Search User
 @api_view(['GET'])
 def SearchUser(request, slug):
     try:
-        UserData = UserModel.User.objects.filter(fullName__icontains=slug)
+        UserData = UserModel.User.objects.filter(fullName__istartswith=slug).filter(isDeleted=False)
         if len(UserData) != 0:
             UserSerializerData = webSerializers.GetUserSerializer(UserData, many=True)
             UserData = UserSerializerData.data
@@ -327,7 +371,7 @@ Search Driver
 @api_view(['GET'])
 def SearchDriver(request, slug):
     try:
-        DriverData = DriverModel.Driver.objects.filter(firstName__contains=slug)
+        DriverData = DriverModel.Driver.objects.filter(firstName__istartswith=slug).filter(isDeleted=False)
         if len(DriverData) != 0:
             DriverSerializerData = webSerializers.GetDriverSerializer(DriverData, many=True)
             DriverData = DriverSerializerData.data
@@ -354,6 +398,95 @@ def SearchDriver(request, slug):
 
 
 
+@api_view(['GET'])
+def SearchCompany(request, slug):
+    try:
+        CompanyData = CompanyModel.Company.objects.filter(name__istartswith=slug).filter(isDeleted=False)
+        if len(CompanyData) != 0:
+            CompanySerializerData = companySerializers.GetAllCompanySerializers(CompanyData, many=True)
+            CompanyData = CompanySerializerData.data
+            ack = 5
+            status = 200
+            success = True
+            msg = "Match Found"
+        else:
+            CompanyData = []
+            ack = 1
+            status = 400
+            success = False
+            msg = "Match Not Found"
+    except Exception as e:
+        print("SearchDriver Error : ", e)
+        CompanyData = []
+        ack = 1
+        status = 400
+        success = False
+        msg = "Match Not Found"
+    
+    data = {'success': success, 'status': status, 'ack': ack, 'msg': msg, 'companyList': CompanyData}
+    return Response(data=data, status=status)
+
+
+@api_view(['GET'])
+def SearchPaymentHistoryById(request, slug):
+    try:
+        PaymentData = AdminModel.PaymentHistory.objects.filter(name__istartswith=slug)
+        if len(PaymentData) != 0:
+            PaymentSerializerData = paymentHistorySerializers.GetAllPaymentHistorySerializer(PaymentData, many=True)
+            PaymentSerializerData = PaymentSerializerData.data
+            ack = 5
+            status = 200
+            success = True
+            msg = "Match Found"
+        else:
+            PaymentSerializerData = []
+            ack = 1
+            status = 400
+            success = False
+            msg = "Match Not Found"
+    except Exception as e:
+        print("SearchPaymentHistoryById Error : ", e)
+        PaymentSerializerData = []
+        ack = 1
+        status = 400
+        success = False
+        msg = "Match Not Found"
+    
+    data = {'success': success, 'status': status, 'ack': ack, 'msg': msg, 'PaymentHistory': PaymentSerializerData}
+    return Response(data=data, status=status)
+
+
+@api_view(['GET'])
+def SearchRideHistoryById(request, slug):
+    try:
+        # from datetime import date
+        # end_Date = date.today()
+        # start_Date = date(year, month, day)
+        # RideData = AdminModel.RideHistory.objects.filter(timeStamp__range=[start_Date, end_Date])
+        RideData = AdminModel.RideHistory.objects.filter(name__istartswith=slug)
+        if len(RideData) != 0:
+            RideSerializerData = rideHistorySerializers.GetAllRideHistorySerializer(RideData, many=True)
+            RideSerializerData = RideSerializerData.data
+            ack = 5
+            status = 200
+            success = True
+            msg = "Match Found"
+        else:
+            RideSerializerData = []
+            ack = 1
+            status = 400
+            success = False
+            msg = "Match Not Found"
+    except Exception as e:
+        print("SearchRideHistoryById Error : ", e)
+        RideSerializerData = []
+        ack = 1
+        status = 400
+        success = False
+        msg = "Match Not Found"
+    
+    data = {'success': success, 'status': status, 'ack': ack, 'msg': msg, 'RideHistory': RideSerializerData}
+    return Response(data=data, status=status)
 
 
 

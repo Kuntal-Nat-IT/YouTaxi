@@ -174,3 +174,20 @@ class UserBooking(models.Model):
     destinationLatitude = models.TextField()
     destinationLongitude = models.TextField()
     taxiType = models.TextField()
+
+
+class PaymentHistory(models.Model):
+    name = models.TextField()
+    phoneNo = models.TextField()
+    amountReceivable = models.FloatField()
+    amountReceived = models.FloatField()
+    dueAmount = models.FloatField()
+    timeStamp = models.DateTimeField()
+
+
+class RideHistory(models.Model):
+    name = models.TextField()
+    phoneNo = models.TextField()
+    startPoint = models.TextField()
+    endPoint = models.TextField()
+    timeStamp = models.DateTimeField()
