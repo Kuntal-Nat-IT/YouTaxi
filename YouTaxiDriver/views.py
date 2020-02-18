@@ -13,7 +13,7 @@ DEFAUT_IMAGE = settings.DEFAULT_IMAGE_PATH
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, Http404
 import datetime
-import json
+import json, jwt
 from django.contrib.auth import authenticate
 
 # Model Import
@@ -317,6 +317,7 @@ def DriverMobileLogin(request):
 @api_view(['POST'])
 def DriverMobileValidateOtp(request):
     try:
+        print(request.data)
         phoneNo = request.data['phoneno']
         driverOTP = request.data['driverOTP']
         DriverObjectOtp = Driver.objects.get(phoneNo=phoneNo,driverOTP=driverOTP)
